@@ -11,10 +11,15 @@ GitSmart CLI leverages AI to streamline your Git workflow with intelligent commi
 ## Features
 
 ✅ **AI-Powered Commit Messages** — Generate conventional commit messages from your staged changes
+
 ✅ **Smart Commit Mode** — Automatically group changes into multiple logical commits (experimental)
+
 ✅ **Code Review Assistant** — Get AI feedback on branch changes
+
 ✅ **Repository Analytics** — Insights into hotspots, contributors, and code trends
+
 ✅ **Multi-Language Support** — Commit messages in 100+ languages (ISO 639-1)
+
 ✅ **Usage Tracking** — Monitor your API usage and plan limits
 
 ## Installation
