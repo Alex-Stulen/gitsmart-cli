@@ -11,7 +11,7 @@ from gitsmart.lang import is_valid_language
 
 console = Console()
 
-DIFF_MAX_CHARS = 10_000
+DIFF_MAX_CHARS = 100_000
 
 _SEVERITY_STYLE = {
     "critical": "bold red",
