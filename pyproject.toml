@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gitsmart"
+version = "0.1.0"
+description = "AI-powered Git workflow assistant CLI"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Alex Stulen", email = "ookno16@gmail.com" }
+]
+requires-python = ">=3.8"
+dependencies = [
+    "click>=8.0.0",
+]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Version Control :: Git",
+    "Topic :: Utilities",
+]
+
+[project.urls]
+Homepage = "https://github.com/Alex-Stulen/gitsmart-cli"
+Repository = "https://github.com/Alex-Stulen/gitsmart-cli"
+Issues = "https://github.com/Alex-Stulen/gitsmart-cli/issues"
+
+[project.scripts]
+gitsmart = "gitsmart.cli:main"
