@@ -1,41 +1,33 @@
-import sys
-
+"""Usage command."""
 import click
 from rich.console import Console
 from rich.table import Table
 
-from gitsmart.client import GitSmartAPIError, GitSmartClient
-from gitsmart.config import get_api_key
+from gitsmart.client import GitSmartClient
+from gitsmart.utils.api import call_api
+from gitsmart.utils.decorators import require_api_key
 
 console = Console()
 
 
-def _usage_bar(used, limit, width=20):
+def usage_bar(used, limit, width=20):
+    """Generate usage progress bar."""
     filled = int(width * used / limit) if limit > 0 else 0
     return "[green]" + "█" * filled + "[/green][dim]" + "░" * (width - filled) + "[/dim]"
 
 
 @click.command()
+@require_api_key
 def usage():
     """Show API usage for the current month."""
-    if not get_api_key():
-        console.print(
-            "[yellow]No API key configured. Run [bold]gitsmart configure[/bold] first.[/yellow]"
-        )
-        sys.exit(1)
-
     client = GitSmartClient()
-    try:
-        usage = client.get("/v1/cli/users/me/usage")
-    except GitSmartAPIError as e:
-        console.print(f"[red]✗ {e}[/red]")
-        sys.exit(1)
+    usage_data = call_api(client, "get", "/v1/cli/users/me/usage")
 
-    used = usage["requests_used"]
-    limit = usage["requests_limit"]
-    remaining = usage["requests_remaining"]
-    plan = usage["plan"].capitalize()
-    month = usage["month"][:7]  # YYYY-MM
+    used = usage_data["requests_used"]
+    limit = usage_data["requests_limit"]
+    remaining = usage_data["requests_remaining"]
+    plan = usage_data["plan"].capitalize()
+    month = usage_data["month"][:7]  # YYYY-MM
 
     remaining_color = "green" if remaining > 0 else "red"
 
@@ -46,9 +38,9 @@ def usage():
     table.add_row("Period", month)
     table.add_row("Used", f"{used:,} / {limit:,}")
     table.add_row("Remaining", f"[{remaining_color}]{remaining:,}[/{remaining_color}]")
-    table.add_row("", _usage_bar(used, limit))
+    table.add_row("", usage_bar(used, limit))
 
     console.print()
-    console.print(f"[bold]API Usage — {month}[/bold]")
+    console.print(f"[yellow]API Usage — {month}[/yellow]")
     console.print(table)
     console.print()
