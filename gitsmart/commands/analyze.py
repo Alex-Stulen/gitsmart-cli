@@ -23,9 +23,9 @@ SINCE_DAYS = 90  # last 3 months
 
 @click.command()
 @click.option("--lang", default=None, metavar="LANG", help="Analysis language (ISO 639-1), overrides config.")
-@require_api_key
-@require_git_repo
 @validate_language
+@require_git_repo
+@require_api_key
 def analyze(lang, repo, language):
     """Analyze repository statistics and get AI insights."""
     since_date = (datetime.now() - timedelta(days=SINCE_DAYS)).strftime("%Y-%m-%d")

@@ -114,9 +114,9 @@ def display_review(result, branch):
 @click.option("--branch", default=None, metavar="BRANCH", help="Branch to review (default: current).")
 @click.option("--base", default=None, metavar="BRANCH", help="Base branch to compare against (default: main or master).")
 @click.option("--lang", default=None, metavar="LANG", help="Review language (ISO 639-1), overrides config.")
-@require_api_key
-@require_git_repo
 @validate_language
+@require_git_repo
+@require_api_key
 def review(branch, base, lang, repo, language):
     """Review changes between branches."""
     current_branch = get_current_branch(repo, branch)

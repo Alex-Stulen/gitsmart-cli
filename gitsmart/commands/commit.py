@@ -37,9 +37,9 @@ DIFF_MAX_CHARS = 100_000
 )
 @click.option("--short", "length", flag_value="short", default=True, help="Generate concise commit message (default).")
 @click.option("--detail", "length", flag_value="detail", help="Generate detailed commit message with full body.")
-@require_api_key
-@require_git_repo
 @validate_language
+@require_git_repo
+@require_api_key
 def commit(auto, smart, commit_type, lang, length, repo, language):
     """Generate AI commit message from staged changes."""
     # Handle smart commit mode

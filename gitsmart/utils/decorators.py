@@ -41,10 +41,19 @@ def require_git_repo(func):
 def validate_language(func):
     """Decorator to validate language parameter."""
     @wraps(func)
-    def wrapper(*args, lang=None, **kwargs):
+    def wrapper(*args, **kwargs):
+        # Extract lang from kwargs (Click passes it as keyword argument)
+        lang = kwargs.get('lang', None)
+
         if lang is not None and not is_valid_language(lang):
             console.print(f"[red]✗ '{lang}' is not a valid ISO 639-1 language code.[/red]")
             sys.exit(1)
+
+        # Determine language: use --lang if provided, otherwise use config
         language = lang.lower() if lang else get_commit_language()
-        return func(*args, lang=lang, language=language, **kwargs)
+
+        # Add language to kwargs
+        kwargs['language'] = language
+
+        return func(*args, **kwargs)
     return wrapper
