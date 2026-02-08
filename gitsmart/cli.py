@@ -1,14 +1,25 @@
 import click
 
+from gitsmart.commands.analyze import analyze
+from gitsmart.commands.commit import commit
+from gitsmart.commands.config import config_cmd
+from gitsmart.commands.configure import configure
+from gitsmart.commands.logout import logout
+from gitsmart.commands.review import review
+from gitsmart.commands.usage import usage
+from gitsmart.commands.whoami import whoami
 
-@click.command()
+
+@click.group()
 def main():
-    """AI-powered Git workflow assistant CLI."""
-    click.echo()
-    click.echo("🚧 GitSmart CLI is under active development")
-    click.echo()
-    click.echo("Stay tuned for updates on GitHub:")
-    click.echo("https://github.com/Alex-Stulen/gitsmart-cli")
-    click.echo()
-    click.echo("⭐ Star the repo to get notified!")
-    click.echo()
+    """GitSmart — AI-powered Git workflow assistant."""
+
+
+main.add_command(configure)
+main.add_command(config_cmd)
+main.add_command(whoami)
+main.add_command(usage)
+main.add_command(commit)
+main.add_command(review)
+main.add_command(analyze)
+main.add_command(logout)
