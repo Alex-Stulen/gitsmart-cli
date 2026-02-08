@@ -3,6 +3,7 @@ from pathlib import Path
 
 import click
 from git import GitCommandError, InvalidGitRepositoryError, Repo
+from rich import box
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -92,7 +93,7 @@ def commit(auto, smart, commit_type, lang, length):
         display += f"\n\n[yellow]{body}[/yellow]"
 
     console.print()
-    console.print(Panel(display, title="[bold]Suggested Commit[/bold]", border_style="green"))
+    console.print(Panel(display, title="[bold]Suggested Commit[/bold]", border_style="green", box=box.HORIZONTALS))
     _show_file_status(repo)
 
     if auto:
@@ -268,7 +269,7 @@ def _commit_smart(repo, language, length):
             display += f"\n\n[yellow]{body}[/yellow]"
 
         console.print()
-        console.print(Panel(display, title="[bold]Suggested Commit[/bold]", border_style="green"))
+        console.print(Panel(display, title="[bold]Suggested Commit[/bold]", border_style="green", box=box.HORIZONTALS))
         console.print(f"[white dim]AI grouped all files into one commit.[/white dim]\n")
         _show_file_status(repo)
 
