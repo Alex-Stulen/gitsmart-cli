@@ -13,6 +13,18 @@ TIMEOUT_COMMIT_SMART = 300.0  # 5 minutes - smart commit with grouping
 TIMEOUT_REVIEW = 120.0  # 2 minutes - code review
 TIMEOUT_ANALYZE = 120.0  # 2 minutes - repository analysis
 
+# AI hint validation
+HINT_MAX_LENGTH = 512  # Maximum length for AI hint parameter
+
+# Credits system
+PLAN_LIMITS = {
+    "free": 50,
+    "basic": 500,
+    "pro": 2000,
+}
+LOW_CREDITS_WARNING = 10  # Show warning when credits < 10
+CRITICAL_CREDITS_WARNING = 5  # Show critical warning when credits < 5
+
 KNOWN_KEYS = ["api_key", "api_url", "commit_language"]
 
 

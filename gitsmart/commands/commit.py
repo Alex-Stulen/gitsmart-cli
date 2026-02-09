@@ -5,8 +5,9 @@ import click
 from rich.console import Console
 
 from gitsmart.client import GitSmartClient
-from gitsmart.config import TIMEOUT_COMMIT
+from gitsmart.config import TIMEOUT_COMMIT, HINT_MAX_LENGTH
 from gitsmart.utils.api import call_api
+from gitsmart.utils.credits import check_credits_before_operation, display_operation_cost
 from gitsmart.utils.decorators import require_api_key, require_git_repo, validate_language
 from gitsmart.utils.display import show_commit_message, show_file_status
 from gitsmart.utils.git import get_staged_diff
@@ -37,14 +38,28 @@ DIFF_MAX_CHARS = 100_000
 )
 @click.option("--short", "length", flag_value="short", default=True, help="Generate concise commit message (default).")
 @click.option("--detail", "length", flag_value="detail", help="Generate detailed commit message with full body.")
+@click.option(
+    "--hint", "-p", "--prompt",
+    default=None,
+    metavar="TEXT",
+    help=f"Additional context for AI (max {HINT_MAX_LENGTH} chars).",
+)
 @validate_language
 @require_git_repo
 @require_api_key
-def commit(auto, smart, commit_type, lang, length, repo, language):
+def commit(auto, smart, commit_type, lang, length, hint, repo, language):
     """Generate AI commit message from staged changes."""
+    # Validate hint length
+    if hint and len(hint) > HINT_MAX_LENGTH:
+        console.print(f"[red]✗ Hint must be {HINT_MAX_LENGTH} characters or less.[/red]")
+        sys.exit(1)
+
+    # Check credits before operation
+    usage_before = check_credits_before_operation("commit generation")
+
     # Handle smart commit mode
     if smart:
-        execute_smart_commit(repo, language, length)
+        execute_smart_commit(repo, language, length, hint, usage_before)
         return
 
     # Get staged diff
@@ -60,11 +75,15 @@ def commit(auto, smart, commit_type, lang, length, repo, language):
 
     # Call API
     client = GitSmartClient()
+    payload = {"diff": diff, "commit_type": commit_type, "language": language, "length": length}
+    if hint:
+        payload["ai_hint"] = hint
+
     result = call_api(
         client,
         "post",
         "/v1/git/commit",
-        {"diff": diff, "commit_type": commit_type, "language": language, "length": length},
+        payload,
         timeout=TIMEOUT_COMMIT,
         status_message="Analyzing changes..."
     )
@@ -76,6 +95,8 @@ def commit(auto, smart, commit_type, lang, length, repo, language):
     # Display
     show_commit_message(message, body)
     show_file_status(repo)
+    console.print()
+    display_operation_cost(usage_before)
 
     # Auto commit or prompt
     if auto:

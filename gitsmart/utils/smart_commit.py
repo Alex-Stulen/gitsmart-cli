@@ -10,6 +10,7 @@ from rich.table import Table
 from gitsmart.client import GitSmartClient
 from gitsmart.config import TIMEOUT_COMMIT_SMART
 from gitsmart.utils.api import call_api
+from gitsmart.utils.credits import display_operation_cost
 from gitsmart.utils.display import show_file_status
 from gitsmart.utils.git import parse_name_status
 from gitsmart.utils.prompts import confirm_commit, do_commit
@@ -232,7 +233,7 @@ def _print_summary(committed, failed):
     console.print()
 
 
-def execute_smart_commit(repo, language, length):
+def execute_smart_commit(repo, language, length, hint=None, usage_before=None):
     """Execute smart commit workflow."""
     # Experimental feature warning
     console.print()
@@ -263,11 +264,15 @@ def execute_smart_commit(repo, language, length):
 
     # Call API
     client = GitSmartClient()
+    payload = {"files": file_changes, "language": language, "length": length}
+    if hint:
+        payload["ai_hint"] = hint
+
     result = call_api(
         client,
         "post",
         "/v1/git/commit/smart",
-        {"files": file_changes, "language": language, "length": length},
+        payload,
         timeout=TIMEOUT_COMMIT_SMART,
         status_message="Analyzing files and grouping into commits..."
     )
@@ -278,6 +283,12 @@ def execute_smart_commit(repo, language, length):
     if total_groups == 0:
         console.print("[yellow]No commit groups generated.[/yellow]")
         sys.exit(0)
+
+    # Display operation cost
+    if usage_before:
+        console.print()
+        display_operation_cost(usage_before)
+        console.print()
 
     # Handle results
     if total_groups == 1:

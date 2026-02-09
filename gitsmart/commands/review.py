@@ -5,8 +5,9 @@ import click
 from rich.console import Console
 
 from gitsmart.client import GitSmartClient
-from gitsmart.config import TIMEOUT_REVIEW
+from gitsmart.config import TIMEOUT_REVIEW, HINT_MAX_LENGTH
 from gitsmart.utils.api import call_api
+from gitsmart.utils.credits import check_credits_before_operation, display_operation_cost
 from gitsmart.utils.decorators import require_api_key, require_git_repo, validate_language
 from gitsmart.utils.git import detect_base_branch, parse_shortstat
 
@@ -114,11 +115,22 @@ def display_review(result, branch):
 @click.option("--branch", default=None, metavar="BRANCH", help="Branch to review (default: current).")
 @click.option("--base", default=None, metavar="BRANCH", help="Base branch to compare against (default: main or master).")
 @click.option("--lang", default=None, metavar="LANG", help="Review language (ISO 639-1), overrides config.")
+@click.option(
+    "--hint", "-p", "--prompt",
+    default=None,
+    metavar="TEXT",
+    help=f"Additional context for AI (max {HINT_MAX_LENGTH} chars).",
+)
 @validate_language
 @require_git_repo
 @require_api_key
-def review(branch, base, lang, repo, language):
+def review(branch, base, lang, hint, repo, language):
     """Review changes between branches."""
+    # Validate hint length
+    if hint and len(hint) > HINT_MAX_LENGTH:
+        console.print(f"[red]✗ Hint must be {HINT_MAX_LENGTH} characters or less.[/red]")
+        sys.exit(1)
+
     current_branch = get_current_branch(repo, branch)
 
     if base is None:
@@ -128,6 +140,9 @@ def review(branch, base, lang, repo, language):
             sys.exit(1)
 
     validate_branches(repo, current_branch, base)
+
+    # Check credits before operation
+    usage_before = check_credits_before_operation("code review")
 
     diff, shortstat = get_diff_stats(repo, base, current_branch)
 
@@ -145,21 +160,26 @@ def review(branch, base, lang, repo, language):
         diff = diff[:DIFF_MAX_CHARS]
 
     client = GitSmartClient()
+    payload = {
+        "diff": diff,
+        "branch": current_branch,
+        "base_branch": base,
+        "files_changed": files_changed,
+        "lines_added": lines_added,
+        "lines_removed": lines_removed,
+        "language": language,
+    }
+    if hint:
+        payload["ai_hint"] = hint
+
     result = call_api(
         client,
         "post",
         "/v1/git/review",
-        {
-            "diff": diff,
-            "branch": current_branch,
-            "base_branch": base,
-            "files_changed": files_changed,
-            "lines_added": lines_added,
-            "lines_removed": lines_removed,
-            "language": language,
-        },
+        payload,
         timeout=TIMEOUT_REVIEW,
         status_message="Analyzing changes..."
     )
 
     display_review(result, current_branch)
+    display_operation_cost(usage_before)

@@ -21,6 +21,21 @@ class GitSmartClient:
     def _handle_response(self, resp):
         if resp.status_code == 401:
             raise GitSmartAPIError("Invalid or expired API key.", status_code=401)
+        if resp.status_code == 402:
+            # Payment Required - insufficient credits
+            try:
+                error_data = resp.json()
+                detail = error_data.get("detail", {})
+                if isinstance(detail, dict):
+                    message = detail.get("message", "Insufficient credits")
+                    current_balance = detail.get("current_balance")
+                    if current_balance is not None:
+                        message = f"{message}\nCurrent balance: {current_balance} credits"
+                else:
+                    message = str(detail)
+                raise GitSmartAPIError(message, status_code=402)
+            except (ValueError, KeyError):
+                raise GitSmartAPIError("Insufficient credits.", status_code=402)
         if resp.status_code == 429:
             raise GitSmartAPIError("Rate limit exceeded.", status_code=429)
         resp.raise_for_status()
