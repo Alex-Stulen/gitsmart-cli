@@ -13,7 +13,10 @@ from gitsmart.commands.whoami import whoami
 
 @click.group()
 def main():
-    """GitSmart — AI-powered Git workflow assistant."""
+    """
+    GitSmart — AI-powered Git workflow assistant.
+    Make your life easier by working with git. And spare time to spend on something more valuable for you! :)
+    """
 
 
 main.add_command(configure)
