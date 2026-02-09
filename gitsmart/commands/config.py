@@ -53,7 +53,7 @@ def config_cmd(key, value):
             v = current.get(k, "")
             table.add_row(k, _mask(k, v) if v else "[dim](not set)[/dim]")
         console.print()
-        console.print("[bold]GitSmart Configuration[/bold]")
+        console.print("[yellow]GitSmart Configuration[/yellow]")
         console.print(table)
         console.print()
         return
