@@ -98,6 +98,10 @@ def display_groups(groups):
         table.add_column(style="white")
 
         table.add_row(f"[bold white]Group {i}:[/bold white] [{confidence_color}]{group['title']}[/{confidence_color}]")
+        commit_body = group.get("message", "")
+        if commit_body:
+            table.add_row("[bold white]Commit message:[/bold white]")
+            table.add_row(f"[yellow]{commit_body}[/yellow]")
         table.add_row(f"[white dim]Confidence: [{confidence_color}]{group['confidence']:.0%}[/{confidence_color}][/white dim]")
         table.add_row("")
 
@@ -236,12 +240,15 @@ def _print_summary(committed, failed):
 def execute_smart_commit(repo, language, length, hint=None, usage_before=None):
     """Execute smart commit workflow."""
     # Experimental feature warning
+    console.print("[cyan]Overview:[/cyan]")
+    console.print("[bold white]AI will analyze your staged files and suggest logical commit groups.[/bold white]")
+    console.print("[bold white]This is convenient if you want to break staged files into independent commits to keep the story clean![/bold white]")
     console.print()
-    console.print("[bold yellow]⚠  Smart Commit is an experimental feature[/bold yellow]")
-    console.print("[white dim]AI will analyze your staged files and suggest logical commit groups.[/white dim]")
+    console.print("[bold yellow]Warning:[/bold yellow]")
+    console.print("[bold yellow]Smart Commit is an experimental feature![/bold yellow]")
     console.print()
 
-    if not click.confirm("  Continue?", default=True):
+    if not click.confirm("Continue?", default=True):
         console.print("[yellow]Aborted.[/yellow]\n")
         sys.exit(0)
 
