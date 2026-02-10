@@ -38,6 +38,22 @@ class GitSmartClient:
                 raise GitSmartAPIError("Insufficient credits.", status_code=402)
         if resp.status_code == 429:
             raise GitSmartAPIError("Rate limit exceeded.", status_code=429)
+        if resp.status_code == 422:
+            # Validation error
+            try:
+                error_data = resp.json()
+                detail = error_data.get("detail", "Validation error")
+                # FastAPI validation errors are often lists
+                if isinstance(detail, list):
+                    errors = "\n".join([f"  • {err.get('msg', str(err))}" for err in detail])
+                    message = f"Validation error:\n{errors}"
+                elif isinstance(detail, dict):
+                    message = f"Validation error: {detail.get('message', str(detail))}"
+                else:
+                    message = f"Validation error: {detail}"
+                raise GitSmartAPIError(message, status_code=422)
+            except (ValueError, KeyError):
+                raise GitSmartAPIError("Validation error.", status_code=422)
         resp.raise_for_status()
         return resp.json()
 
@@ -61,3 +77,48 @@ class GitSmartClient:
 
     def post(self, path, json, timeout=None):
         return self._request("POST", path, json=json, timeout=timeout)
+
+    def get_search_anchor(self, repository_url, timeout=None):
+        """
+        Get last synced commit hash for search RAG.
+
+        Args:
+            repository_url: Git repository URL
+            timeout: Request timeout
+
+        Returns:
+            dict: {"hash": "abc123", "full_hash": "abc123..."} or {"hash": null, "full_hash": null}
+        """
+        return self.post("/v1/git/search/anchor", {"repository_url": repository_url}, timeout=timeout)
+
+    def search_commits(self, query, repository_url, commits, language="en", filters=None, timeout=None):
+        """
+        Search through git history using AI.
+
+        Args:
+            query: Search query string
+            repository_url: Git repository URL
+            commits: List of commit dictionaries
+            language: Response language (en/ru/uk)
+            filters: Optional filters dict (author, email)
+            timeout: Request timeout
+
+        Returns:
+            dict: {
+                "answer": str,
+                "relevant_commits": list,
+                "total_analyzed": int,
+                "credits_charged": int
+            }
+        """
+        payload = {
+            "query": query,
+            "repository_url": repository_url,
+            "commits": commits,
+            "language": language
+        }
+
+        if filters:
+            payload["filters"] = filters
+
+        return self.post("/v1/git/search", payload, timeout=timeout)

@@ -33,6 +33,9 @@ def format_response_time(ms):
 
 def format_tokens(input_tokens, output_tokens):
     """Format token counts."""
+    # Handle None values (for failed operations or old logs)
+    input_tokens = input_tokens or 0
+    output_tokens = output_tokens or 0
     total = input_tokens + output_tokens
     return f"{input_tokens:,}→{output_tokens:,} ({total:,})"
 
