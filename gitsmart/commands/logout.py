@@ -15,7 +15,7 @@ def logout():
         console.print("[yellow]Not configured. Nothing to remove.[/yellow]")
         return
 
-    console.print(f"\n[yellow]This will delete[/yellow] [bold]{CONFIG_FILE}[/bold]\n")
+    console.print(f"\n[yellow]This will delete[/yellow] [yellow]{CONFIG_FILE}[/yellow]\n")
     if not click.confirm("  Are you sure?", default=False):
         console.print("[yellow]Aborted.[/yellow]\n")
         return

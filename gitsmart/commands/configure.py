@@ -15,7 +15,7 @@ def configure():
     """Configure GitSmart with your API key."""
     current = load_config()
 
-    console.print("\n[bold]GitSmart Configuration[/bold]\n")
+    console.print("\n[yellow]GitSmart Configuration[/yellow]\n")
 
     api_key = click.prompt("  Enter your API key", hide_input=True)
     api_url = click.prompt("  API URL", default=current.get("api_url") or DEFAULT_API_URL)
@@ -41,11 +41,11 @@ def configure():
     save_config(current)
 
     console.print(
-        f"[green]✓[/green] Authenticated as [bold]{user['email']}[/bold]"
+        f"[green]✓[/green] Authenticated as [yellow]{user['email']}[/yellow]"
         f" ([cyan]{user['plan'].capitalize()}[/cyan] plan)"
     )
     console.print(
         f"[green]✓[/green] Commit language set to"
-        f" [bold]{language_name(lang)}[/bold] ([dim]{lang.lower()}[/dim])"
+        f" [yellow]{language_name(lang)}[/yellow] ([dim]{lang.lower()}[/dim])"
     )
     console.print(f"[green]✓[/green] Configuration saved to [dim]{CONFIG_FILE}[/dim]\n")

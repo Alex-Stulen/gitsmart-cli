@@ -83,6 +83,7 @@ def display_logs_table(logs, detailed=False):
     if detailed:
         # Detailed table with tokens and timing
         table = Table(show_header=True, header_style="bold cyan")
+        table.add_column("Request ID", style="dim")
         table.add_column("Date/Time", style="dim")
         table.add_column("Operation", style="cyan")
         table.add_column("Credits", justify="right")
@@ -93,6 +94,7 @@ def display_logs_table(logs, detailed=False):
     else:
         # Simple table
         table = Table(show_header=True, header_style="bold cyan")
+        table.add_column("Request ID", style="dim")
         table.add_column("Date/Time", style="dim")
         table.add_column("Operation", style="cyan")
         table.add_column("Credits", justify="right")
@@ -100,6 +102,7 @@ def display_logs_table(logs, detailed=False):
         table.add_column("Balance", justify="right")
 
     for log in logs:
+        req_id = log["id"]
         date_time = format_datetime(log["created_at"])
         operation = log["operation_type"].capitalize()
         credits = str(log["credits_charged"])
@@ -109,9 +112,9 @@ def display_logs_table(logs, detailed=False):
         if detailed:
             tokens = format_tokens(log["input_tokens"], log["output_tokens"])
             response_time = format_response_time(log["response_time_ms"])
-            table.add_row(date_time, operation, credits, status, tokens, response_time, balance)
+            table.add_row(req_id, date_time, operation, credits, status, tokens, response_time, balance)
         else:
-            table.add_row(date_time, operation, credits, status, balance)
+            table.add_row(req_id, date_time, operation, credits, status, balance)
 
     console.print()
     console.print(table)

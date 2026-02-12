@@ -37,7 +37,7 @@ DIFF_MAX_CHARS = 100_000
     help="Commit message language (ISO 639-1), overrides config.",
 )
 @click.option("--short", "length", flag_value="short", default=True, help="Generate concise commit message (default).")
-@click.option("--detail", "length", flag_value="detail", help="Generate detailed commit message with full body.")
+@click.option("--detail", "-d", "length", flag_value="detail", help="Generate detailed commit message with full body.")
 @click.option(
     "--hint", "-p", "--prompt",
     default=None,
@@ -65,7 +65,7 @@ def commit(auto, smart, commit_type, lang, length, hint, repo, language):
     # Get staged diff
     diff, truncated = get_staged_diff(repo, DIFF_MAX_CHARS)
     if not diff:
-        console.print("[yellow]No staged changes. Use [bold]git add[/bold] first.[/yellow]")
+        console.print("[yellow]No staged changes. Use [yellow]git add[/yellow] first.[/yellow]")
         sys.exit(1)
 
     if truncated:

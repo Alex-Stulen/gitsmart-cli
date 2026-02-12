@@ -13,9 +13,17 @@ TIMEOUT_COMMIT_SMART = 300.0  # 5 minutes - smart commit with grouping
 TIMEOUT_REVIEW = 120.0  # 2 minutes - code review
 TIMEOUT_ANALYZE = 120.0  # 2 minutes - repository analysis
 TIMEOUT_SEARCH = 120.0  # 2 minutes - semantic search
+TIMEOUT_EXPLAIN = 120.0  # 2 minutes - commit explanation
 
 # AI hint validation
 HINT_MAX_LENGTH = 512  # Maximum length for AI hint parameter
+
+# Explain command settings
+EXPLAIN_BATCH_DELAY = 1.0  # Delay between batch requests in seconds
+
+# Security command settings
+TIMEOUT_SECURITY = 120.0  # 2 minutes - security analysis
+SECURITY_BATCH_DELAY = 1.0  # Delay between batch requests in seconds
 
 # Search command settings
 SEARCH_MAX_COMMITS = 500  # Maximum commits to collect per search

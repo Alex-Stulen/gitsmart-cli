@@ -44,7 +44,7 @@ def config_cmd(key, value):
 
     if key is None:
         if not current:
-            console.print("[yellow]No configuration found. Run [bold]gitsmart configure[/bold] first.[/yellow]")
+            console.print("[yellow]No configuration found. Run [yellow]gitsmart configure[/yellow] first.[/yellow]")
             return
         table = Table(show_header=False, box=None, padding=(0, 2))
         table.add_column(style="dim")
