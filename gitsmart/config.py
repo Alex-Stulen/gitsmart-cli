@@ -3,7 +3,7 @@ from pathlib import Path
 
 CONFIG_DIR = Path.home() / ".gitsmart"
 CONFIG_FILE = CONFIG_DIR / "config.json"
-DEFAULT_API_URL = "https://api.example.com"
+DEFAULT_API_URL = "https://api.gitsmart.io"
 DEFAULT_COMMIT_LANGUAGE = "en"
 
 # API request timeouts (in seconds)
