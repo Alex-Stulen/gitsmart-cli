@@ -8,25 +8,82 @@
 
 GitSmart CLI leverages AI to streamline your Git workflow with intelligent commit messages, code reviews, and repository analytics.
 
+> 📖 **Full documentation:** [docs.gitsmart.io](https://docs.gitsmart.io)
+
 ## Features
 
 ✅ **AI-Powered Commit Messages** — Generate conventional commit messages from your staged changes
 
-✅ **Smart Commit Mode** — Automatically group changes into multiple logical commits (experimental)
+✅ **Smart Commit Mode** — Automatically group changes into multiple logical commits
+
+✅ **Security Scan** — Detect real vulnerabilities before they reach your repo
+
+✅ **Plain Language Search** — Query your commit history like asking a colleague
+
+✅ **Code Explain** — Generate PR-ready documentation from your changes
 
 ✅ **Code Review Assistant** — Get AI feedback on branch changes
 
 ✅ **Repository Analytics** — Insights into hotspots, contributors, and code trends
 
-✅ **Multi-Language Support** — Commit messages in 100+ languages (ISO 639-1)
+✅ **Multi-Language Support** — Output in 100+ languages (ISO 639-1)
 
-✅ **Usage Tracking** — Monitor your API usage and plan limits
+✅ **Usage Tracking** — Monitor your API credit balance and plan limits
 
 ## Installation
+
+**Requirements:** Python 3.8+, Git on your `$PATH`, a [GitSmart account](https://gitsmart.io)
+
+### Recommended: install in a virtual environment
+
+```bash
+# Create a virtual environment (once)
+python -m venv ~/.venvs/gitsmart
+
+# Activate it
+source ~/.venvs/gitsmart/bin/activate   # macOS / Linux
+# or
+~\.venvs\gitsmart\Scripts\activate      # Windows
+
+# Install GitSmart
+pip install gitsmart
+```
+
+To use GitSmart without activating the venv every time, add it to your shell profile (`.bashrc`, `.zshrc`, etc.):
+
+```bash
+export PATH="$HOME/.venvs/gitsmart/bin:$PATH"
+```
+
+### Alternative: global install
 
 ```bash
 pip install gitsmart
 ```
+
+> **Note:** A global install may conflict with other Python packages. The virtual environment approach is cleaner, especially on macOS.
+
+### Verify the installation
+
+```bash
+gitsmart --version
+```
+
+### Update
+
+```bash
+pip install --upgrade gitsmart
+# or, if using a venv:
+source ~/.venvs/gitsmart/bin/activate && pip install --upgrade gitsmart
+```
+
+### Uninstall
+
+```bash
+pip uninstall gitsmart
+```
+
+Your local config at `~/.gitsmart/` is not removed automatically — delete it manually if needed.
 
 ## Quick Start
 
@@ -38,7 +95,7 @@ gitsmart configure
 
 You'll be prompted for:
 - API key (get one at [gitsmart.io](https://gitsmart.io))
-- API URL (default: https://api.example.com)
+- API URL (default: `https://api.gitsmart.io`)
 - Commit language (default: `en`)
 
 ### 2. Generate a commit message
@@ -76,10 +133,10 @@ gitsmart commit --type feat
 gitsmart commit --detail
 
 # Commit in another language
-gitsmart commit --lang ru
+gitsmart commit --lang fr
 ```
 
-#### 🚀 Smart Commit Mode (Experimental)
+#### 🚀 Smart Commit Mode
 
 Automatically analyze and group staged files into multiple logical commits:
 
@@ -111,7 +168,68 @@ gitsmart commit --smart
 
 **Limitations:**
 - Maximum 50 files
-- Experimental feature - may need refinement
+
+### `security` — AI security scan
+
+Scan your code changes for real vulnerabilities before they reach the repo:
+
+```bash
+# Scan staged changes
+gitsmart security --staged
+
+# Scan a specific commit
+gitsmart security --commit a3f92c1
+
+# Scan a commit range
+gitsmart security --from v1.0.0 --to HEAD
+
+# Save report to a file
+gitsmart security --staged --markdown --output SECURITY_REPORT.md
+```
+
+**What it detects:**
+- SQL injection, command injection
+- XSS (reflected and stored)
+- Hardcoded secrets (API keys, passwords, tokens)
+- Path traversal
+- Insecure deserialization
+- Sensitive data exposure
+
+### `search` — Plain language commit history search
+
+Query your commit history without regex or exact strings:
+
+```bash
+# Search by intent
+gitsmart search "who last updated the authorization logic?"
+
+# Find when a feature was introduced
+gitsmart search "when was dark mode added?"
+
+# Filter by author
+gitsmart search "payment changes" --author "Ivan"
+
+# Limit results
+gitsmart search "database migrations" --limit 10
+```
+
+### `explain` — Generate PR-ready documentation
+
+Generate a documentation-style breakdown of your changes:
+
+```bash
+# Explain staged changes
+gitsmart explain --staged
+
+# Explain a specific commit
+gitsmart explain --commit a3f92c1
+
+# Explain a commit range
+gitsmart explain --from v1.0.0 --to HEAD
+
+# Save to a Markdown file
+gitsmart explain --staged --markdown --output EXPLANATION.md
+```
 
 ### `review` — Code review assistant
 
@@ -135,14 +253,14 @@ gitsmart review --lang es
 - Summary of what changed
 - Potential issues (by severity)
 - Recommendations for improvement
-- Complexity assessment
+- Verdict on overall change quality
 
 ### `analyze` — Repository analytics
 
 Get AI insights into your repository:
 
 ```bash
-# Analyze last 90 days
+# Analyze repository
 gitsmart analyze
 
 # Analysis in another language
@@ -165,17 +283,33 @@ Shows:
 - Email
 - Current plan (Free/Basic/Pro)
 
-### `usage` — API usage stats
+### `usage` — Credit balance
 
 ```bash
 gitsmart usage
 ```
 
 Shows:
-- Requests used this month
-- Requests remaining
+- Credits used this month
+- Credits remaining
 - Plan limit
 - Usage progress bar
+
+### `logs` — Usage history
+
+```bash
+# Browse recent logs
+gitsmart logs
+
+# Filter by operation type
+gitsmart logs --type commit
+
+# Show only failed operations
+gitsmart logs --failed
+
+# Show detailed info (tokens, response time)
+gitsmart logs --detail
+```
 
 ### `config` — Manage configuration
 
@@ -207,7 +341,7 @@ Config file location: `~/.gitsmart/config.json`
 | Key | Description | Default |
 |-----|-------------|---------|
 | `api_key` | Your GitSmart API key | — |
-| `api_url` | API endpoint URL | `https://api.example.com` |
+| `api_url` | API endpoint URL | `https://api.gitsmart.io` |
 | `commit_language` | ISO 639-1 language code | `en` |
 
 ## Language Support
@@ -221,8 +355,8 @@ gitsmart commit
 # Spanish
 gitsmart commit --lang es
 
-# Russian
-gitsmart commit --lang ru
+# Ukrainian
+gitsmart commit --lang uk
 
 # Japanese
 gitsmart commit --lang ja
@@ -232,20 +366,22 @@ gitsmart commit --lang de
 
 # French
 gitsmart commit --lang fr
+
+...etc
 ```
 
 Set default language in config:
 ```bash
-gitsmart config commit_language ru
+gitsmart config commit_language fr
 ```
 
 ## API Plans
 
-| Plan | Monthly Requests | Price |
-|------|-----------------|-------|
-| Free | 50 | $0 |
-| Basic | 1,000 | $9.99 |
-| Pro | 10,000 | $29.99 |
+| Plan  | Monthly Credits | Price     | Rate Limit  |
+|-------|-----------------|-----------|-------------|
+| Free  | 250             | $0        | 5 req/min   |
+| Basic | 5,000           | $5/month  | 20 req/min  |
+| Pro   | 10,000          | $10/month | 50 req/min  |
 
 Sign up at [gitsmart.io](https://gitsmart.io)
 
@@ -305,16 +441,16 @@ gitsmart review --base main
 ### Track your usage
 
 ```bash
-# Check remaining requests
+# Check remaining credits
 gitsmart usage
 
 # Output:
-# API Usage — 2026-02
-# Plan      Free
-# Period    2026-02
-# Used      15 / 50
-# Remaining 35
-# ████████░░░░░░░░░░░░
+# Credits Usage — 2026-02
+# Plan        Free
+# Period      2026-02
+# Used        15 / 250 credits
+# Remaining   235
+# ██░░░░░░░░░░░░░░░░░░
 ```
 
 ## Troubleshooting
@@ -329,11 +465,11 @@ Commands like `commit`, `review`, and `analyze` must be run inside a git reposit
 
 ### "Invalid language code"
 
-Use ISO 639-1 language codes (2 letters). Examples: `en`, `es`, `ru`, `de`, `fr`, `ja`
+Use ISO 639-1 language codes (2 letters). Examples: `en`, `es`, `uk`, `de`, `fr`, `ja`
 
 ### "Rate limit exceeded"
 
-You've reached your monthly request limit. Upgrade your plan at [gitsmart.io](https://gitsmart.io)
+You've reached your monthly credit limit. Upgrade your plan at [gitsmart.io](https://gitsmart.io)
 
 ## Development
 
@@ -366,7 +502,7 @@ MIT © 2026 Oleksii Stulen
 - 🌐 Website: [gitsmart.io](https://gitsmart.io)
 - 📦 PyPI: [pypi.org/project/gitsmart](https://pypi.org/project/gitsmart)
 - 🐙 GitHub: [Alex-Stulen/gitsmart-cli](https://github.com/Alex-Stulen/gitsmart-cli)
-- 📧 Support: support@gitsmart.io
+- 📧 Support: s.gitsmart@gmail.com
 
 ---
 
