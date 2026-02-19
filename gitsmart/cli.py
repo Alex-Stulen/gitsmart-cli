@@ -1,5 +1,6 @@
 import click
 
+from gitsmart import __version__
 from gitsmart.commands.analyze import analyze
 from gitsmart.commands.commit import commit
 from gitsmart.commands.config import config_cmd
@@ -15,6 +16,7 @@ from gitsmart.commands.whoami import whoami
 
 
 @click.group()
+@click.version_option(__version__, "--version", "-V", message="%(version)s")
 def main():
     """
     GitSmart — AI-powered Git workflow assistant.
